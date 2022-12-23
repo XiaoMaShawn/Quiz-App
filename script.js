@@ -7,9 +7,28 @@ const questions = [
       { text: '43', correct: false },
       { text: '55', correct: false }
     ]
+  },
+  {
+    question: 'What is 4 * 7?',
+    answers: [
+      { text: '344', correct: false },
+      { text: '2', correct: false },
+      { text: '28', correct: true },
+      { text: '77', correct: false }
+    ]
+  },
+  {
+    question: 'Which country is called "Maple Country"?',
+    answers: [
+      { text: 'Canada', correct: true },
+      { text: 'US', correct: false },
+      { text: 'China', correct: false },
+      { text: 'Japan', correct: false }
+    ]
   }
 ]
 
+//get questions from database and truck the index of the question
 let shuffledQuestions, currentQuestionIndex;
 
 const startButton = document.getElementById("start-btn");
@@ -19,6 +38,10 @@ const questionElement = document.getElementById('question');
 const answerButtonsElement = document.getElementById('answer-buttons');
 
 startButton.addEventListener("click", startGame);
+nextButton.addEventListener("click", () => {
+  currentQuestionIndex++;
+  setNextQuestion(shuffledQuestions, currentQuestionIndex);
+})
 
 function startGame() {
   // console.log("started");
@@ -32,6 +55,7 @@ function startGame() {
 }
 
 function resetState() {
+  clearStatusClass(document.body);
   nextButton.classList.add('hide');
   while (answerButtonsElement.firstChild) {
     answerButtonsElement.removeChild(answerButtonsElement.firstChild);
@@ -57,7 +81,36 @@ function showQuestion(question) {
   });
 }
 
-function selectAnswer() {
+function selectAnswer(e) {
+  const selectedButton = e.target;
+  const correct = selectedButton.dataset.correct;
+  //set the page background color to correct or wrong mode
+  setStatusClass(document.body, correct);
+  Array.from(answerButtonsElement.children).forEach(button => {
+    //set the button background color to correct or wrong mode
+    setStatusClass(button, button.dataset.correct);
+  });
+  //check whether there is question left in the database, yes--countinue; no--restart
+  if (shuffledQuestions.length > currentQuestionIndex + 1) {
+    //show the next button when u click the answer
+    nextButton.classList.remove('hide');
+  } else {
+    startButton.innerText = "Restart";
+    startButton.classList.remove("hide");
+  }
+}
 
+function setStatusClass(element, correct) {
+  clearStatusClass(element);
+  if (correct) {
+    element.classList.add('correct');
+  } else {
+    element.classList.add('wrong');
+  }
+}
+
+function clearStatusClass(element) {
+  element.classList.remove('correct');
+  element.classList.remove('wrong');
 }
 
